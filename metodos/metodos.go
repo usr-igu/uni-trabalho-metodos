@@ -3,6 +3,8 @@ package metodos
 import (
 	"fmt"
 
+	"math"
+
 	"github.com/Knetic/govaluate"
 	"github.com/fuzzyqu/trabalho-metodos/models"
 )
@@ -14,14 +16,14 @@ func RegraDosTrapeziosRepetida(integral models.Integral, n int) (float64, error)
 	var result float64
 	params := make(map[string]interface{}, 1)
 
-	expr, err := govaluate.NewEvaluableExpression(integral.Expressao)
+	expr, err := newExpression(integral.Expressao)
 	if err != nil {
 		return 0.0, err
 	}
 
 	// a
 	params[integral.Parametro] = integral.A
-	r, err := evaluate(expr, params)
+	r, err := evaluateExpression(expr, params)
 	if err != nil {
 		return r, err
 	}
@@ -29,7 +31,7 @@ func RegraDosTrapeziosRepetida(integral models.Integral, n int) (float64, error)
 
 	// b
 	params[integral.Parametro] = integral.B
-	r, err = evaluate(expr, params)
+	r, err = evaluateExpression(expr, params)
 	if err != nil {
 		return 0.0, err
 	}
@@ -38,7 +40,7 @@ func RegraDosTrapeziosRepetida(integral models.Integral, n int) (float64, error)
 	// intervalo
 	for i := 1; i < n; i += 1 {
 		params[integral.Parametro] = integral.A + float64(i)*step
-		r, err := evaluate(expr, params)
+		r, err := evaluateExpression(expr, params)
 		if err != nil {
 			return r, err
 		}
@@ -54,7 +56,7 @@ func RegraDeSimpson13Repetida(integral models.Integral, n int) (float64, error) 
 		return 0.0, fmt.Errorf("n must be even n: %d", n)
 	}
 
-	expr, err := govaluate.NewEvaluableExpression(integral.Expressao)
+	expr, err := newExpression(integral.Expressao)
 	if err != nil {
 		return 0.0, err
 	}
@@ -66,7 +68,7 @@ func RegraDeSimpson13Repetida(integral models.Integral, n int) (float64, error) 
 
 	// a
 	params[integral.Parametro] = integral.A
-	r, err := evaluate(expr, params)
+	r, err := evaluateExpression(expr, params)
 	if err != nil {
 		return 0.0, err
 	}
@@ -74,7 +76,7 @@ func RegraDeSimpson13Repetida(integral models.Integral, n int) (float64, error) 
 
 	// b
 	params[integral.Parametro] = integral.B
-	r, err = evaluate(expr, params)
+	r, err = evaluateExpression(expr, params)
 	if err != nil {
 		return 0.0, err
 	}
@@ -83,7 +85,7 @@ func RegraDeSimpson13Repetida(integral models.Integral, n int) (float64, error) 
 	// intervalo
 	for i := 1; i < n; i += 2 {
 		params[integral.Parametro] = integral.A + float64(i)*step
-		r, err := evaluate(expr, params)
+		r, err := evaluateExpression(expr, params)
 		if err != nil {
 			return 0.0, err
 		}
@@ -93,7 +95,7 @@ func RegraDeSimpson13Repetida(integral models.Integral, n int) (float64, error) 
 	// intervalo
 	for i := 2; i < n-1; i += 2 {
 		params[integral.Parametro] = integral.A + float64(i)*step
-		r, err := evaluate(expr, params)
+		r, err := evaluateExpression(expr, params)
 		if err != nil {
 			return 0.0, err
 		}
@@ -109,7 +111,7 @@ func RegraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 		return 0.0, fmt.Errorf("n must be multiple of 3 n: %d", n)
 	}
 
-	expr, err := govaluate.NewEvaluableExpression(integral.Expressao)
+	expr, err := newExpression(integral.Expressao)
 	if err != nil {
 		return 0.0, err
 	}
@@ -121,7 +123,7 @@ func RegraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 
 	// a
 	params[integral.Parametro] = integral.A
-	r, err := evaluate(expr, params)
+	r, err := evaluateExpression(expr, params)
 	if err != nil {
 		return 0.0, err
 	}
@@ -129,7 +131,7 @@ func RegraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 
 	// b
 	params[integral.Parametro] = integral.B
-	r, err = evaluate(expr, params)
+	r, err = evaluateExpression(expr, params)
 	if err != nil {
 		return r, err
 	}
@@ -138,7 +140,7 @@ func RegraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 	// intervalo
 	for i := 1; i < n; i += 3 {
 		params[integral.Parametro] = integral.A + float64(i)*step
-		r, err := evaluate(expr, params)
+		r, err := evaluateExpression(expr, params)
 		if err != nil {
 			return 0.0, err
 		}
@@ -148,7 +150,7 @@ func RegraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 	// intervalo
 	for i := 2; i < n-1; i += 3 {
 		params[integral.Parametro] = integral.A + float64(i)*step
-		r, err := evaluate(expr, params)
+		r, err := evaluateExpression(expr, params)
 		if err != nil {
 			return 0.0, err
 		}
@@ -158,7 +160,7 @@ func RegraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 	// intervalo
 	for i := 3; i < n-2; i += 3 {
 		params[integral.Parametro] = integral.A + float64(i)*step
-		r, err := evaluate(expr, params)
+		r, err := evaluateExpression(expr, params)
 		if err != nil {
 			return 0.0, err
 		}
@@ -168,7 +170,7 @@ func RegraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 	return result * step * 3.0 / 8.0, nil
 }
 
-func evaluate(expr *govaluate.EvaluableExpression, params map[string]interface{}) (float64, error) {
+func evaluateExpression(expr *govaluate.EvaluableExpression, params map[string]interface{}) (float64, error) {
 	t, err := expr.Evaluate(params)
 	if err != nil {
 		return 0.0, err
@@ -178,4 +180,38 @@ func evaluate(expr *govaluate.EvaluableExpression, params map[string]interface{}
 		return 0.0, err
 	}
 	return result, nil
+}
+
+func newExpression(expr string) (*govaluate.EvaluableExpression, error) {
+	functions := map[string]govaluate.ExpressionFunction{
+		"cos": func(args ...interface{}) (interface{}, error) {
+			c := math.Cos(args[0].(float64))
+			return (float64)(c), nil
+		},
+		"sin": func(args ...interface{}) (interface{}, error) {
+			c := math.Sin(args[0].(float64))
+			return (float64)(c), nil
+		},
+		"abs": func(args ...interface{}) (interface{}, error) {
+			c := math.Abs(args[0].(float64))
+			return (float64)(c), nil
+		},
+		"log2": func(args ...interface{}) (interface{}, error) {
+			c := math.Log2(args[0].(float64))
+			return (float64)(c), nil
+		},
+		"log10": func(args ...interface{}) (interface{}, error) {
+			c := math.Log10(args[0].(float64))
+			return (float64)(c), nil
+		},
+		"tan": func(args ...interface{}) (interface{}, error) {
+			c := math.Tan(args[0].(float64))
+			return (float64)(c), nil
+		},
+	}
+	evaluable, err := govaluate.NewEvaluableExpressionWithFunctions(expr, functions)
+	if err != nil {
+		return &govaluate.EvaluableExpression{}, err
+	}
+	return evaluable, nil
 }
