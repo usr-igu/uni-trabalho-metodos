@@ -25,22 +25,23 @@ func main() {
 		nint, err := strconv.Atoi(n)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
-		var integral models.Integral
-		if err := c.ShouldBindJSON(&integral); err == nil {
-			if r, ok := cache[cacheLine{"trapezio", integral, nint}]; ok { // está na cache ?
-				c.JSON(http.StatusOK, gin.H{"result": r})
-			} else { // não foi computado ainda
-				result, err := metodos.RegraDosTrapezios(integral, nint)
-				if err != nil {
-					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				} else {
-					cache[cacheLine{"trapezio", integral, nint}] = result
-					c.JSON(http.StatusOK, gin.H{"result": result})
-				}
-			}
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			var integral models.Integral
+			if err := c.ShouldBindJSON(&integral); err == nil {
+				if r, ok := cache[cacheLine{"trapezio", integral, nint}]; ok { // está na cache ?
+					c.JSON(http.StatusOK, gin.H{"result": r})
+				} else { // não foi computado ainda
+					result, err := metodos.RegraDosTrapezios(integral, nint)
+					if err != nil {
+						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					} else {
+						cache[cacheLine{"trapezio", integral, nint}] = result
+						c.JSON(http.StatusOK, gin.H{"result": result})
+					}
+				}
+			} else {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			}
 		}
 	})
 
