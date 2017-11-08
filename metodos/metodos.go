@@ -133,7 +133,7 @@ func RegraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 	params[integral.Parametro] = integral.B
 	r, err = evaluateExpression(expr, params)
 	if err != nil {
-		return r, err
+		return 0.0, err
 	}
 	result += r
 
@@ -144,7 +144,7 @@ func RegraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 		if err != nil {
 			return 0.0, err
 		}
-		result += r * 3
+		result += r * 3.0
 	}
 
 	// intervalo
@@ -154,7 +154,7 @@ func RegraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 		if err != nil {
 			return 0.0, err
 		}
-		result += r * 3
+		result += r * 3.0
 	}
 
 	// intervalo
@@ -164,10 +164,65 @@ func RegraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 		if err != nil {
 			return 0.0, err
 		}
-		result += r * 2
+		result += r * 2.0
 	}
 
 	return result * step * 3.0 / 8.0, nil
+}
+
+func RegraNewtonCotes4(integral models.Integral) (float64, error) {
+
+	expr, err := newExpression(integral.Expressao)
+	if err != nil {
+		return 0.0, err
+	}
+
+	step := (integral.B - integral.A) / 4.0
+
+	var result float64
+	params := make(map[string]interface{}, 1)
+
+	expr, err = newExpression(integral.Expressao)
+	if err != nil {
+		return 0.0, err
+	}
+
+	params[integral.Parametro] = integral.A
+	r, err := evaluateExpression(expr, params)
+	if err != nil {
+		return 0.0, err
+	}
+	result += r * 7.0
+
+	params[integral.Parametro] = integral.A + step*1
+	r, err = evaluateExpression(expr, params)
+	if err != nil {
+		return 0.0, err
+	}
+	result += r * 32.0
+
+	params[integral.Parametro] = integral.A + step*2
+	r, err = evaluateExpression(expr, params)
+	if err != nil {
+		return 0.0, err
+	}
+	result += r * 12.0
+
+	params[integral.Parametro] = integral.A + step*3
+	r, err = evaluateExpression(expr, params)
+	if err != nil {
+		return 0.0, err
+	}
+	result += r * 32.0
+
+	params[integral.Parametro] = integral.A + step*4
+	r, err = evaluateExpression(expr, params)
+	if err != nil {
+		return 0.0, err
+	}
+	result += r * 7.0
+
+	return result * (step * (2.0 / 45.0)), nil
 }
 
 func evaluateExpression(expr *govaluate.EvaluableExpression, params map[string]interface{}) (float64, error) {
@@ -202,6 +257,10 @@ func newExpression(expr string) (*govaluate.EvaluableExpression, error) {
 		},
 		"log10": func(args ...interface{}) (interface{}, error) {
 			c := math.Log10(args[0].(float64))
+			return (float64)(c), nil
+		},
+		"log": func(args ...interface{}) (interface{}, error) {
+			c := math.Log(args[0].(float64))
 			return (float64)(c), nil
 		},
 		"tan": func(args ...interface{}) (interface{}, error) {

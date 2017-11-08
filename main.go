@@ -95,5 +95,24 @@ func main() {
 		}
 	})
 
+	router.POST("/newtoncotes4/", func(c *gin.Context) {
+		var integral models.Integral
+		if err := c.ShouldBindJSON(&integral); err == nil {
+			if r, ok := cache[cacheLine{"newtoncotes4", integral, 0}]; ok { // está na cache ?
+				c.JSON(http.StatusOK, gin.H{"result": r})
+			} else { // não foi computado ainda
+				result, err := metodos.RegraNewtonCotes4(integral)
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				} else {
+					cache[cacheLine{"newtoncotes4", integral, 0}] = result
+					c.JSON(http.StatusOK, gin.H{"result": result})
+				}
+			}
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		}
+	})
+
 	router.Run(":6565")
 }
