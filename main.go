@@ -18,7 +18,7 @@ type cacheLine struct {
 func main() {
 	router := gin.Default()
 
-	cache := make(map[cacheLine]float64, 128)
+	cache := make(map[cacheLine]float64, 32)
 
 	router.POST("/trapezio/:n", func(c *gin.Context) {
 		n := c.Param("n")
@@ -31,7 +31,7 @@ func main() {
 				if r, ok := cache[cacheLine{"trapezio", integral, nint}]; ok { // está na cache ?
 					c.JSON(http.StatusOK, gin.H{"result": r})
 				} else { // não foi computado ainda
-					result, err := metodos.RegraDosTrapezios(integral, nint)
+					result, err := metodos.RegraDosTrapeziosRepetida(integral, nint)
 					if err != nil {
 						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					} else {
@@ -56,11 +56,36 @@ func main() {
 				if r, ok := cache[cacheLine{"simpson13", integral, nint}]; ok { // está na cache ?
 					c.JSON(http.StatusOK, gin.H{"result": r})
 				} else { // não foi computado ainda
-					result, err := metodos.RegraDeSimpson13(integral, nint)
+					result, err := metodos.RegraDeSimpson13Repetida(integral, nint)
 					if err != nil {
 						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					} else {
 						cache[cacheLine{"simpson13", integral, nint}] = result
+						c.JSON(http.StatusOK, gin.H{"result": result})
+					}
+				}
+			} else {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			}
+		}
+	})
+
+	router.POST("/simpson38/:n", func(c *gin.Context) {
+		n := c.Param("n")
+		nint, err := strconv.Atoi(n)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		} else {
+			var integral models.Integral
+			if err := c.ShouldBindJSON(&integral); err == nil {
+				if r, ok := cache[cacheLine{"simpson38", integral, nint}]; ok { // está na cache ?
+					c.JSON(http.StatusOK, gin.H{"result": r})
+				} else { // não foi computado ainda
+					result, err := metodos.RegraDeSimpson38Repetida(integral, nint)
+					if err != nil {
+						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					} else {
+						cache[cacheLine{"simpson38", integral, nint}] = result
 						c.JSON(http.StatusOK, gin.H{"result": result})
 					}
 				}
