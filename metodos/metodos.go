@@ -2,9 +2,7 @@ package metodos
 
 import (
 	"fmt"
-
 	"math"
-
 	"github.com/Knetic/govaluate"
 	"github.com/fuzzyqu/trabalho-metodos/models"
 )

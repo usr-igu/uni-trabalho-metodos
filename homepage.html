@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <title>DOG</title>
+  </head>
+  <body>
+  	<h1>DOG MATH</h1>
+    <div>
+      <form>
+        <input type="radio" id="calculo" value="trapezio">Trapézio Repetido</input>
+        <input type="radio" id="calculo" value="newtoncotes4">Newton-Cotes</input>
+        <input type="radio" id="calculo" value="simpson13">Simpson 1/4</input>
+        <input type="radio" id="calculo" value="simpson38">Simpson 3/8</input>
+        <br>
+        <br>
+          <input type="text" id="expressao" name="expressao" placeholder="expressao">
+        <br>
+        <div>
+          <p>
+            Dê <input type="text" id="parametro" name="parametro" placeholder="parametro"> 
+            = <input type="text" id="a" name="a" placeholder="a"> 
+            até <input type="text" id="b" name="b" placeholder="b">
+          </p>
+        </div>
+        <br>
+        <input type="submit" value="Calcular" onclick="pegaValores();">
+      </form>
+    </div>
+    <p id="teste"></p>
+  </body>
+
+  <script>
+    var integral = new Object();
+    integral.calculo;
+    integral.expressao;
+    integral.parametro;
+    integral.a;
+    integral.b;
+    
+    function pegaValores() {
+    integral.calculo = document.getElementById("calculo").value;
+    integral.expressao = document.getElementById("expressao").value;
+    integral.parametro = document.getElementById("parametro").value;
+    integral.a = document.getElementById("a").value;
+    integral.b = document.getElementById("b").value;
+    
+    //document.write(integral.calculo);
+    //document.write(" calculo <br/>");  
+    //document.write(integral.parametro);
+    //document.write(" parametro <br/>");
+    //document.write(integral.expressao);
+    //document.write(" expressao <br/>");
+    //document.write(integral.a);
+    //document.write(" a <br/>");
+    //document.write(integral.b);
+    //document.write(" b <br/>");
+
+    console.log(integral);
+      
+    }
+
+  </script>
+
+</html>
