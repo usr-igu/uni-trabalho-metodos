@@ -1,65 +1,78 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>DOG</title>
-  </head>
-  <body>
-  	<h1>DOG MATH</h1>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.0/axios.min.js"></script>
+</head>
+<body>
+<h1>DOG MATH</h1>
+<div>
+
     <div>
-      <form>
-        <input type="radio" id="calculo" value="trapezio">Trapézio Repetido</input>
-        <input type="radio" id="calculo" value="newtoncotes4">Newton-Cotes</input>
-        <input type="radio" id="calculo" value="simpson13">Simpson 1/4</input>
-        <input type="radio" id="calculo" value="simpson38">Simpson 3/8</input>
-        <br>
-        <br>
-          <input type="text" id="expressao" name="expressao" placeholder="expressao">
-        <br>
-        <div>
-          <p>
-            Dê <input type="text" id="parametro" name="parametro" placeholder="parametro"> 
-            = <input type="text" id="a" name="a" placeholder="a"> 
-            até <input type="text" id="b" name="b" placeholder="b">
-          </p>
-        </div>
-        <br>
-        <input type="submit" value="Calcular" onclick="pegaValores();">
-      </form>
+        <input name="calculo" type="radio" id="calculo1" value="trapezio">Trapézio Repetido</input>
+        <input name="calculo" type="radio" id="calculo2" value="newtoncotes4">Newton-Cotes</input>
+        <input name="calculo" type="radio" id="calculo3" value="simpson13">Simpson 1/4</input>
+        <input name="calculo" type="radio" id="calculo4" value="simpson38">Simpson 3/8</input>
     </div>
-    <p id="teste"></p>
-  </body>
 
-  <script>
-    var integral = new Object();
-    integral.calculo;
-    integral.expressao;
-    integral.parametro;
-    integral.a;
-    integral.b;
-    
-    function pegaValores() {
-    integral.calculo = document.getElementById("calculo").value;
-    integral.expressao = document.getElementById("expressao").value;
-    integral.parametro = document.getElementById("parametro").value;
-    integral.a = document.getElementById("a").value;
-    integral.b = document.getElementById("b").value;
-    
-    //document.write(integral.calculo);
-    //document.write(" calculo <br/>");  
-    //document.write(integral.parametro);
-    //document.write(" parametro <br/>");
-    //document.write(integral.expressao);
-    //document.write(" expressao <br/>");
-    //document.write(integral.a);
-    //document.write(" a <br/>");
-    //document.write(integral.b);
-    //document.write(" b <br/>");
+    <input type="text" id="expressao" name="expressao" placeholder="Expressão">
+    <div>
+        <p>
+            Dê <input type="text" id="parametro" name="parametro" placeholder="Paramêtro">
+            = <input type="text" id="a" name="a" placeholder="A">
+            até <input type="text" id="b" name="b" placeholder="B">
+        </p>
+        <p>
+            Erro
+            <input type="text" id="erro" placeholder="Erro desejado">
+        </p>
+    </div>
+    <input type="submit" value="calcular" onclick="enviaValores();">
+</div>
+<p id="teste"></p>
+</body>
 
-    console.log(integral);
-      
+<script>
+    function enviaValores() {
+
+        var integral = {
+            expressao: '',
+            parametro: '',
+            a: 0,
+            b: 0,
+            erro: 0
+        }
+
+        calculo = ''
+
+        var radios = document.getElementsByName('calculo');
+        for (var i = 0, length = radios.length; i < length; i++)
+        {
+            if (radios[i].checked)
+            {
+                calculo = radios[i].value;
+                break;
+            }
+        }
+
+        console.log(calculo)
+
+        integral.expressao = document.getElementById('expressao').value;
+        integral.parametro = document.getElementById('parametro').value;
+        integral.a = document.getElementById('a').value;
+        integral.b = document.getElementById('b').value;
+        integral.erro = document.getElementById('erro').value;
+
+
+        axios.post('/' + calculo, integral)
+                .then(function (response) {
+                    console.log(response.data);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
     }
-
-  </script>
+</script>
 
 </html>
