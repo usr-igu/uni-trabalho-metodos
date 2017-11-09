@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <title>Integrador</title>
+    <script type="text/javascript" src="js/axios.js"></script>
+</head>
+<body>
+<h1>Integrador para Métodos</h1>
+<input name="calculo" type="radio" id="calculo1" value="trapezio">Trapézio Repetido</input>
+<input name="calculo" type="radio" id="calculo2" value="newtoncotes4">Newton-Cotes</input>
+<input name="calculo" type="radio" id="calculo3" value="simpson13">Simpson 1/4</input>
+<input name="calculo" type="radio" id="calculo4" value="simpson38">Simpson 3/8</input>
+
+<input type="text" id="expressao" name="expressao" placeholder="Expressão">
+<div>
+    <p>
+        Dê <input type="text" id="parametro" name="parametro" placeholder="Paramêtro">
+        = <input type="text" id="a" name="a" placeholder="A">
+        até <input type="text" id="b" name="b" placeholder="B">
+    </p>
+    <p>
+        Erro <input type="text" id="erro" placeholder="Erro desejado">
+    </p>
+</div>
+<input type="submit" value="calcular" onclick="enviaValores();">
+</body>
+
+<script>
+    function enviaValores() {
+
+        var integral = {
+            expressao: '',
+            parametro: '',
+            a: 0,
+            b: 0
+        };
+
+        calculo = '';
+        var radios = document.getElementsByName('calculo');
+        for (var i = 0, length = radios.length; i < length; i++) {
+            if (radios[i].checked) {
+                calculo = radios[i].value;
+                break;
+            }
+        }
+
+        console.log(calculo);
+
+        integral.expressao = document.getElementById('expressao').value;
+        integral.parametro = document.getElementById('parametro').value;
+        integral.a = document.getElementById('a').value;
+        integral.b = document.getElementById('b').value;
+        erro = document.getElementById('erro').value;
+
+
+        axios.post('/' + calculo + '/' + erro, integral)
+                .then(function (response) {
+                    console.log(response.data.result);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+    }
+</script>
+
+</html>

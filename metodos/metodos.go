@@ -3,11 +3,28 @@ package metodos
 import (
 	"fmt"
 	"math"
+
 	"github.com/Knetic/govaluate"
 	"github.com/fuzzyqu/trabalho-metodos/models"
 )
 
-func RegraDosTrapeziosRepetida(integral models.Integral, n int) (float64, error) {
+func RegraDosTrapeziosRepetida(integral models.Integral, erro int) (float64, error) {
+	return 0.0, nil
+}
+
+func RegraDeSimpson13Repetida(integral models.Integral, erro int) (float64, error) {
+	return 0.0, nil
+}
+
+func RegraDeSimpson38Repetida(integral models.Integral, erro int) (float64, error) {
+	return 0.0, nil
+}
+
+func RegraNewtonCotes4(integral models.Integral, erro int) (float64, error) {
+	return regraNewtonCotes4(integral)
+}
+
+func regraDosTrapeziosRepetida(integral models.Integral, n int) (float64, error) {
 
 	step := (integral.B - integral.A) / float64(n)
 
@@ -48,7 +65,7 @@ func RegraDosTrapeziosRepetida(integral models.Integral, n int) (float64, error)
 	return result * (step / 2.0), nil
 }
 
-func RegraDeSimpson13Repetida(integral models.Integral, n int) (float64, error) {
+func regraDeSimpson13Repetida(integral models.Integral, n int) (float64, error) {
 
 	if n&1 != 0 {
 		return 0.0, fmt.Errorf("n must be even n: %d", n)
@@ -103,7 +120,7 @@ func RegraDeSimpson13Repetida(integral models.Integral, n int) (float64, error) 
 	return result * (step / 3.0), nil
 }
 
-func RegraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) {
+func regraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) {
 
 	if n%3 != 0 {
 		return 0.0, fmt.Errorf("n must be multiple of 3 n: %d", n)
@@ -168,7 +185,7 @@ func RegraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 	return result * step * 3.0 / 8.0, nil
 }
 
-func RegraNewtonCotes4(integral models.Integral) (float64, error) {
+func regraNewtonCotes4(integral models.Integral) (float64, error) {
 
 	expr, err := newExpression(integral.Expressao)
 	if err != nil {

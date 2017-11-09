@@ -12,7 +12,7 @@ import (
 type cacheLine struct {
 	method   string
 	integral models.Integral
-	n        int
+	erro     int
 }
 
 func main() {
@@ -20,24 +20,24 @@ func main() {
 
 	cache := make(map[cacheLine]float64, 32)
 
-	router.StaticFile("/", "homepage.html")
+	router.Static("/", "view/")
 
-	router.POST("/trapezio/:n", func(c *gin.Context) {
-		n := c.Param("n")
-		nint, err := strconv.Atoi(n)
+	router.POST("/trapezio/:erro", func(c *gin.Context) {
+		t := c.Param("erro")
+		erro, err := strconv.Atoi(t)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		} else {
 			var integral models.Integral
 			if err := c.ShouldBindJSON(&integral); err == nil {
-				if r, ok := cache[cacheLine{"trapezio", integral, nint}]; ok { // está na cache ?
+				if r, ok := cache[cacheLine{"trapezio", integral, erro}]; ok { // está na cache ?
 					c.JSON(http.StatusOK, gin.H{"result": r})
 				} else { // não foi computado ainda
-					result, err := metodos.RegraDosTrapeziosRepetida(integral, nint)
+					result, err := metodos.RegraDosTrapeziosRepetida(integral, erro)
 					if err != nil {
 						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					} else {
-						cache[cacheLine{"trapezio", integral, nint}] = result
+						cache[cacheLine{"trapezio", integral, erro}] = result
 						c.JSON(http.StatusOK, gin.H{"result": result})
 					}
 				}
@@ -47,22 +47,22 @@ func main() {
 		}
 	})
 
-	router.POST("/simpson13/:n", func(c *gin.Context) {
-		n := c.Param("n")
-		nint, err := strconv.Atoi(n)
+	router.POST("/simpson13/:erro", func(c *gin.Context) {
+		t := c.Param("erro")
+		erro, err := strconv.Atoi(t)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		} else {
 			var integral models.Integral
 			if err := c.ShouldBindJSON(&integral); err == nil {
-				if r, ok := cache[cacheLine{"simpson13", integral, nint}]; ok { // está na cache ?
+				if r, ok := cache[cacheLine{"simpson13", integral, erro}]; ok { // está na cache ?
 					c.JSON(http.StatusOK, gin.H{"result": r})
 				} else { // não foi computado ainda
-					result, err := metodos.RegraDeSimpson13Repetida(integral, nint)
+					result, err := metodos.RegraDeSimpson13Repetida(integral, erro)
 					if err != nil {
 						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					} else {
-						cache[cacheLine{"simpson13", integral, nint}] = result
+						cache[cacheLine{"simpson13", integral, erro}] = result
 						c.JSON(http.StatusOK, gin.H{"result": result})
 					}
 				}
@@ -72,22 +72,22 @@ func main() {
 		}
 	})
 
-	router.POST("/simpson38/:n", func(c *gin.Context) {
-		n := c.Param("n")
-		nint, err := strconv.Atoi(n)
+	router.POST("/simpson38/:erro", func(c *gin.Context) {
+		t := c.Param("erro")
+		erro, err := strconv.Atoi(t)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		} else {
 			var integral models.Integral
 			if err := c.ShouldBindJSON(&integral); err == nil {
-				if r, ok := cache[cacheLine{"simpson38", integral, nint}]; ok { // está na cache ?
+				if r, ok := cache[cacheLine{"simpson38", integral, erro}]; ok { // está na cache ?
 					c.JSON(http.StatusOK, gin.H{"result": r})
 				} else { // não foi computado ainda
-					result, err := metodos.RegraDeSimpson38Repetida(integral, nint)
+					result, err := metodos.RegraDeSimpson38Repetida(integral, erro)
 					if err != nil {
 						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 					} else {
-						cache[cacheLine{"simpson38", integral, nint}] = result
+						cache[cacheLine{"simpson38", integral, erro}] = result
 						c.JSON(http.StatusOK, gin.H{"result": result})
 					}
 				}
@@ -97,22 +97,28 @@ func main() {
 		}
 	})
 
-	router.POST("/newtoncotes4", func(c *gin.Context) {
-		var integral models.Integral
-		if err := c.ShouldBindJSON(&integral); err == nil {
-			if r, ok := cache[cacheLine{"newtoncotes4", integral, 0}]; ok { // está na cache ?
-				c.JSON(http.StatusOK, gin.H{"result": r})
-			} else { // não foi computado ainda
-				result, err := metodos.RegraNewtonCotes4(integral)
-				if err != nil {
-					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				} else {
-					cache[cacheLine{"newtoncotes4", integral, 0}] = result
-					c.JSON(http.StatusOK, gin.H{"result": result})
-				}
-			}
+	router.POST("/newtoncotes4/:erro", func(c *gin.Context) {
+		t := c.Param("erro")
+		erro, err := strconv.Atoi(t)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			var integral models.Integral
+			if err := c.ShouldBindJSON(&integral); err == nil {
+				if r, ok := cache[cacheLine{"newtoncotes4", integral, erro}]; ok { // está na cache ?
+					c.JSON(http.StatusOK, gin.H{"result": r})
+				} else { // não foi computado ainda
+					result, err := metodos.RegraNewtonCotes4(integral, erro)
+					if err != nil {
+						c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+					} else {
+						cache[cacheLine{"newtoncotes4", integral, erro}] = result
+						c.JSON(http.StatusOK, gin.H{"result": result})
+					}
+				}
+			} else {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			}
 		}
 	})
 
