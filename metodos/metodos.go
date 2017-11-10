@@ -8,8 +8,9 @@ import (
 	"github.com/fuzzyqu/trabalho-metodos/models"
 )
 
-func RegraDosTrapeziosRepetida(integral models.Integral, erro int) (float64, error) {
-	wantedPrecision := math.Pow10(-erro)
+// RegraDosTrapeziosRepetida ...
+func RegraDosTrapeziosRepetida(integral models.Integral, k int) (float64, error) {
+	wantedPrecision := math.Pow10(-k)
 	lastR, err := regraDosTrapeziosRepetida(integral, 1)
 	if err != nil {
 		return 0.0, err
@@ -24,11 +25,11 @@ func RegraDosTrapeziosRepetida(integral models.Integral, erro int) (float64, err
 		}
 		lastR = r
 	}
-	return 0.0, nil
 }
 
-func RegraDeSimpson13Repetida(integral models.Integral, erro int) (float64, error) {
-	wantedPrecision := math.Pow10(-erro)
+// RegraDeSimpson13Repetida ...
+func RegraDeSimpson13Repetida(integral models.Integral, k int) (float64, error) {
+	wantedPrecision := math.Pow10(-k)
 	lastR, err := regraDeSimpson13Repetida(integral, 2)
 	if err != nil {
 		return 0.0, err
@@ -43,11 +44,11 @@ func RegraDeSimpson13Repetida(integral models.Integral, erro int) (float64, erro
 		}
 		lastR = r
 	}
-	return 0.0, nil
 }
 
-func RegraDeSimpson38Repetida(integral models.Integral, erro int) (float64, error) {
-	wantedPrecision := math.Pow10(-erro)
+// RegraDeSimpson38Repetida ...
+func RegraDeSimpson38Repetida(integral models.Integral, k int) (float64, error) {
+	wantedPrecision := math.Pow10(-k)
 	lastR, err := regraDeSimpson38Repetida(integral, 3)
 	if err != nil {
 		return 0.0, err
@@ -62,10 +63,10 @@ func RegraDeSimpson38Repetida(integral models.Integral, erro int) (float64, erro
 		}
 		lastR = r
 	}
-	return 0.0, nil
 }
 
-func RegraNewtonCotes4(integral models.Integral, erro int) (float64, error) {
+// RegraNewtonCotes4 ...
+func RegraNewtonCotes4(integral models.Integral, k int) (float64, error) {
 	return regraNewtonCotes4(integral)
 }
 
@@ -99,13 +100,13 @@ func regraDosTrapeziosRepetida(integral models.Integral, n int) (float64, error)
 	result += r
 
 	// intervalo
-	for i := 1; i < n; i += 1 {
+	for i := 1; i < n; i++ {
 		params[integral.Parametro] = integral.A + float64(i)*step
 		r, err := evaluateExpression(expr, params)
 		if err != nil {
 			return r, err
 		}
-		result += r * 2
+		result += r * 2.0
 	}
 
 	return result * (step / 2.0), nil

@@ -4,15 +4,20 @@
     <meta charset="utf-8">
     <title>Integrador</title>
     <script type="text/javascript" src="js/axios.js"></script>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
-<h1>Integrador para Métodos</h1>
-<input name="calculo" type="radio" id="calculo1" value="trapezio">Trapézio Repetido</input>
-<input name="calculo" type="radio" id="calculo2" value="newtoncotes4">Newton-Cotes</input>
-<input name="calculo" type="radio" id="calculo3" value="simpson13">Simpson 1/3</input>
-<input name="calculo" type="radio" id="calculo4" value="simpson38">Simpson 3/8</input>
+<h1>Integrador para Métodos Computacionais</h1>
 
-<input type="text" id="expressao" name="expressao" placeholder="Expressão">
+<div>
+    <input name="calculo" type="radio" id="calculo1" value="trapezio" checked>Trapézio Repetido</input>
+    <input name="calculo" type="radio" id="calculo2" value="newtoncotes4">Newton-Cotes</input>
+    <input name="calculo" type="radio" id="calculo3" value="simpson13">Simpson 1/3</input>
+    <input name="calculo" type="radio" id="calculo4" value="simpson38">Simpson 3/8</input>
+</div>
+
+<p>Expressão <input type="text" id="expressao" name="expressao" placeholder="Expressão"></p>
 <div>
     <p>
         Dê <input type="text" id="parametro" name="parametro" placeholder="Paramêtro">
@@ -23,7 +28,7 @@
         Erro <input type="text" id="erro" placeholder="Erro desejado">
     </p>
 </div>
-<input type="submit" value="calcular" onclick="enviaValores();">
+<input type="submit" value="Calcular!" onclick="enviaValores();">
 </body>
 
 <script>
