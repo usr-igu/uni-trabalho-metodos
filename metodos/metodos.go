@@ -34,7 +34,7 @@ func RegraDeSimpson13Repetida(integral models.Integral, k int) (float64, error) 
 	if err != nil {
 		return 0.0, err
 	}
-	for i := 4; ; i += 2 {
+	for i := 4; ; i *= 2 {
 		r, err := regraDeSimpson13Repetida(integral, i)
 		if err != nil {
 			return 0.0, err
@@ -53,7 +53,7 @@ func RegraDeSimpson38Repetida(integral models.Integral, k int) (float64, error) 
 	if err != nil {
 		return 0.0, err
 	}
-	for i := 6; ; i += 3 {
+	for i := 6; ; i *= 3 {
 		r, err := regraDeSimpson38Repetida(integral, i)
 		if err != nil {
 			return 0.0, err
@@ -229,7 +229,7 @@ func regraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 		result += r * 2.0
 	}
 
-	return result * step * 3.0 / 8.0, nil
+	return result * step * (3.0 / 8.0), nil
 }
 
 func regraNewtonCotes4(integral models.Integral) (float64, error) {
