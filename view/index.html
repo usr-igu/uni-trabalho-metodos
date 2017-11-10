@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>Integrador</title>
+    <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="js/axios.min.js"></script>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
@@ -38,6 +39,9 @@
     <div>
         <input type="submit" value="Calcular!" onclick="enviaValores();">
     </div>
+    <div>
+        <label id="resultado" hidden>xD</label>
+    </div>
 </body>
 
 <script>
@@ -70,6 +74,7 @@
         axios.post('/' + calculo + '/' + erro, integral)
             .then(function (response) {
                 console.log(response.data.result);
+                $('#resultado').text("Resultado: " + response.data.result).show()              
             })
             .catch(function (error) {
                 console.log(error);
