@@ -1,7 +1,9 @@
 package main
 
 import (
+	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/fuzzyqu/trabalho-metodos/metodos"
@@ -16,6 +18,11 @@ type cacheLine struct {
 }
 
 func main() {
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
 
 	router := gin.Default()
 
@@ -123,5 +130,5 @@ func main() {
 		}
 	})
 
-	router.Run(":6565")
+	router.Run(":" + port)
 }
