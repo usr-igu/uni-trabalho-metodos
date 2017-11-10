@@ -9,14 +9,59 @@ import (
 )
 
 func RegraDosTrapeziosRepetida(integral models.Integral, erro int) (float64, error) {
+	wantedPrecision := math.Pow10(-erro)
+	lastR, err := regraDosTrapeziosRepetida(integral, 1)
+	if err != nil {
+		return 0.0, err
+	}
+	for i := 2; ; i++ {
+		r, err := regraDosTrapeziosRepetida(integral, i)
+		if err != nil {
+			return 0.0, err
+		}
+		if relativeError := math.Abs(r-lastR) / math.Abs(r); relativeError < wantedPrecision {
+			return r, nil
+		}
+		lastR = r
+	}
 	return 0.0, nil
 }
 
 func RegraDeSimpson13Repetida(integral models.Integral, erro int) (float64, error) {
+	wantedPrecision := math.Pow10(-erro)
+	lastR, err := regraDeSimpson13Repetida(integral, 2)
+	if err != nil {
+		return 0.0, err
+	}
+	for i := 4; ; i += 2 {
+		r, err := regraDeSimpson13Repetida(integral, i)
+		if err != nil {
+			return 0.0, err
+		}
+		if relativeError := math.Abs(r-lastR) / math.Abs(r); relativeError < wantedPrecision {
+			return r, nil
+		}
+		lastR = r
+	}
 	return 0.0, nil
 }
 
 func RegraDeSimpson38Repetida(integral models.Integral, erro int) (float64, error) {
+	wantedPrecision := math.Pow10(-erro)
+	lastR, err := regraDeSimpson38Repetida(integral, 3)
+	if err != nil {
+		return 0.0, err
+	}
+	for i := 6; ; i += 3 {
+		r, err := regraDeSimpson38Repetida(integral, i)
+		if err != nil {
+			return 0.0, err
+		}
+		if relativeError := math.Abs(r-lastR) / math.Abs(r); relativeError < wantedPrecision {
+			return r, nil
+		}
+		lastR = r
+	}
 	return 0.0, nil
 }
 
@@ -24,6 +69,7 @@ func RegraNewtonCotes4(integral models.Integral, erro int) (float64, error) {
 	return regraNewtonCotes4(integral)
 }
 
+// --
 func regraDosTrapeziosRepetida(integral models.Integral, n int) (float64, error) {
 
 	step := (integral.B - integral.A) / float64(n)

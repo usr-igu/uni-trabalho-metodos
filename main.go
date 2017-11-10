@@ -16,6 +16,7 @@ type cacheLine struct {
 }
 
 func main() {
+
 	router := gin.Default()
 
 	cache := make(map[cacheLine]float64, 32)
