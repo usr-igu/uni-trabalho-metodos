@@ -27,11 +27,10 @@ func main() {
 	router := gin.Default()
 
 	s := &http.Server{
-		Addr:           ":" + port,
-		Handler:        router,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
-		MaxHeaderBytes: 1 << 20,
+		Addr:         ":" + port,
+		Handler:      router,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
 
 	cache := make(map[cacheLine]float64, 32)

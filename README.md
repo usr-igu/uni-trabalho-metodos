@@ -1,4 +1,4 @@
-[![Build Status](https://semaphoreci.com/api/v1/fuzzyqu/trabalho-metodos/branches/master/badge.svg)](https://semaphoreci.com/fuzzyqu/trabalho-metodos)
+[![Build Status](https://travis-ci.org/fuzzyqu/trabalho-metodos.svg?branch=master)](https://travis-ci.org/fuzzyqu/trabalho-metodos)
 
 # Trabalho métodos computacionais - 2017/2
 
