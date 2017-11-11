@@ -11,12 +11,17 @@ import (
 // RegraDosTrapeziosRepetida ...
 func RegraDosTrapeziosRepetida(integral models.Integral, k int) (float64, error) {
 	wantedPrecision := math.Pow10(-k)
-	lastR, err := regraDosTrapeziosRepetida(integral, 1)
+	expr, err := newExpression(integral.Expressao)
+	if err != nil {
+		return 0.0, nil
+	}
+
+	lastR, err := regraDosTrapeziosRepetida(expr, integral.A, integral.B, integral.Parametro, 1)
 	if err != nil {
 		return 0.0, err
 	}
 	for i := 2; ; i++ {
-		r, err := regraDosTrapeziosRepetida(integral, i)
+		r, err := regraDosTrapeziosRepetida(expr, integral.A, integral.B, integral.Parametro, i)
 		if err != nil {
 			return 0.0, err
 		}
@@ -71,20 +76,15 @@ func RegraNewtonCotes4(integral models.Integral, k int) (float64, error) {
 }
 
 // --
-func regraDosTrapeziosRepetida(integral models.Integral, n int) (float64, error) {
+func regraDosTrapeziosRepetida(expr *govaluate.EvaluableExpression, a, b float64, param string, n int) (float64, error) {
 
-	step := (integral.B - integral.A) / float64(n)
+	step := (b - a) / float64(n)
 
 	var result float64
 	params := make(map[string]interface{}, 1)
 
-	expr, err := newExpression(integral.Expressao)
-	if err != nil {
-		return 0.0, err
-	}
-
 	// a
-	params[integral.Parametro] = integral.A
+	params[param] = a
 	r, err := evaluateExpression(expr, params)
 	if err != nil {
 		return r, err
@@ -92,7 +92,7 @@ func regraDosTrapeziosRepetida(integral models.Integral, n int) (float64, error)
 	result += r
 
 	// b
-	params[integral.Parametro] = integral.B
+	params[param] = b
 	r, err = evaluateExpression(expr, params)
 	if err != nil {
 		return 0.0, err
@@ -101,7 +101,7 @@ func regraDosTrapeziosRepetida(integral models.Integral, n int) (float64, error)
 
 	// intervalo
 	for i := 1; i < n; i++ {
-		params[integral.Parametro] = integral.A + float64(i)*step
+		params[param] = a + float64(i)*step
 		r, err := evaluateExpression(expr, params)
 		if err != nil {
 			return r, err
