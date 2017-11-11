@@ -10,7 +10,7 @@ import (
 	"github.com/fuzzyqu/trabalho-metodos/models"
 )
 
-const timeOut = time.Second * 3
+const timeOut = time.Second * 5
 
 // RegraDosTrapeziosRepetida ...
 func RegraDosTrapeziosRepetida(integral models.Integral, k int) (float64, error) {
