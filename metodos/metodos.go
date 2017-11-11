@@ -1,23 +1,35 @@
 package metodos
 
 import (
+	"context"
 	"fmt"
 	"math"
+	"time"
 
 	"github.com/Knetic/govaluate"
 	"github.com/fuzzyqu/trabalho-metodos/models"
 )
 
+const timeOut = time.Second * 3
+
 // RegraDosTrapeziosRepetida ...
 func RegraDosTrapeziosRepetida(integral models.Integral, k int) (float64, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeOut)
+	defer cancel()
+
 	wantedPrecision := math.Pow10(-k)
-	lastR, err := regraDosTrapeziosRepetida(integral, 1)
+	lastR, err := regraDosTrapeziosRepetida(ctx, integral, 1)
 	if err != nil {
 		return 0.0, err
 	}
+
 	for i := 2; ; i *= 2 {
-		r, err := regraDosTrapeziosRepetida(integral, i)
+		r, err := regraDosTrapeziosRepetida(ctx, integral, i)
 		if err != nil {
+			if err == context.DeadlineExceeded {
+				return lastR, nil
+			}
 			return 0.0, err
 		}
 		if relativeError := math.Abs(r-lastR) / math.Abs(r); relativeError < wantedPrecision {
@@ -29,16 +41,24 @@ func RegraDosTrapeziosRepetida(integral models.Integral, k int) (float64, error)
 
 // RegraDeSimpson13Repetida ...
 func RegraDeSimpson13Repetida(integral models.Integral, k int) (float64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeOut)
+	defer cancel()
+
 	wantedPrecision := math.Pow10(-k)
-	lastR, err := regraDeSimpson13Repetida(integral, 2)
+	lastR, err := regraDeSimpson13Repetida(ctx, integral, 2)
 	if err != nil {
 		return 0.0, err
 	}
+
 	for i := 4; ; i *= 2 {
-		r, err := regraDeSimpson13Repetida(integral, i)
+		r, err := regraDeSimpson13Repetida(ctx, integral, i)
 		if err != nil {
+			if err == context.DeadlineExceeded {
+				return lastR, nil
+			}
 			return 0.0, err
 		}
+
 		if relativeError := math.Abs(r-lastR) / math.Abs(r); relativeError < wantedPrecision {
 			return r, nil
 		}
@@ -48,14 +68,20 @@ func RegraDeSimpson13Repetida(integral models.Integral, k int) (float64, error) 
 
 // RegraDeSimpson38Repetida ...
 func RegraDeSimpson38Repetida(integral models.Integral, k int) (float64, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeOut)
+	defer cancel()
+
 	wantedPrecision := math.Pow10(-k)
-	lastR, err := regraDeSimpson38Repetida(integral, 3)
+	lastR, err := regraDeSimpson38Repetida(ctx, integral, 3)
 	if err != nil {
 		return 0.0, err
 	}
 	for i := 6; ; i *= 3 {
-		r, err := regraDeSimpson38Repetida(integral, i)
+		r, err := regraDeSimpson38Repetida(ctx, integral, i)
 		if err != nil {
+			if err == context.DeadlineExceeded {
+				return lastR, nil
+			}
 			return 0.0, err
 		}
 		if relativeError := math.Abs(r-lastR) / math.Abs(r); relativeError < wantedPrecision {
@@ -71,7 +97,7 @@ func RegraNewtonCotes4(integral models.Integral, k int) (float64, error) {
 }
 
 // --
-func regraDosTrapeziosRepetida(integral models.Integral, n int) (float64, error) {
+func regraDosTrapeziosRepetida(ctx context.Context, integral models.Integral, n int) (float64, error) {
 
 	step := (integral.B - integral.A) / float64(n)
 
@@ -107,12 +133,18 @@ func regraDosTrapeziosRepetida(integral models.Integral, n int) (float64, error)
 			return r, err
 		}
 		result += r * 2.0
+		select {
+		case <-ctx.Done():
+			return result * (step / 2.0), ctx.Err()
+		default:
+			continue
+		}
 	}
 
 	return result * (step / 2.0), nil
 }
 
-func regraDeSimpson13Repetida(integral models.Integral, n int) (float64, error) {
+func regraDeSimpson13Repetida(ctx context.Context, integral models.Integral, n int) (float64, error) {
 
 	if n&1 != 0 {
 		return 0.0, fmt.Errorf("n must be even n: %d", n)
@@ -152,6 +184,12 @@ func regraDeSimpson13Repetida(integral models.Integral, n int) (float64, error) 
 			return 0.0, err
 		}
 		result += r * 4
+		select {
+		case <-ctx.Done():
+			return 0.0, ctx.Err()
+		default:
+			continue
+		}
 	}
 
 	// intervalo
@@ -162,12 +200,18 @@ func regraDeSimpson13Repetida(integral models.Integral, n int) (float64, error) 
 			return 0.0, err
 		}
 		result += r * 2
+		select {
+		case <-ctx.Done():
+			return 0.0, ctx.Err()
+		default:
+			continue
+		}
 	}
 
 	return result * (step / 3.0), nil
 }
 
-func regraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) {
+func regraDeSimpson38Repetida(ctx context.Context, integral models.Integral, n int) (float64, error) {
 
 	if n%3 != 0 {
 		return 0.0, fmt.Errorf("n must be multiple of 3 n: %d", n)
@@ -207,6 +251,12 @@ func regraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 			return 0.0, err
 		}
 		result += r * 3.0
+		select {
+		case <-ctx.Done():
+			return 0.0, ctx.Err()
+		default:
+			continue
+		}
 	}
 
 	// intervalo
@@ -217,6 +267,12 @@ func regraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 			return 0.0, err
 		}
 		result += r * 3.0
+		select {
+		case <-ctx.Done():
+			return 0.0, ctx.Err()
+		default:
+			continue
+		}
 	}
 
 	// intervalo
@@ -227,6 +283,12 @@ func regraDeSimpson38Repetida(integral models.Integral, n int) (float64, error) 
 			return 0.0, err
 		}
 		result += r * 2.0
+		select {
+		case <-ctx.Done():
+			return 0.0, ctx.Err()
+		default:
+			continue
+		}
 	}
 
 	return result * step * (3.0 / 8.0), nil
