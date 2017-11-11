@@ -15,7 +15,7 @@ func RegraDosTrapeziosRepetida(integral models.Integral, k int) (float64, error)
 	if err != nil {
 		return 0.0, err
 	}
-	for i := 2; ; i++ {
+	for i := 2; ; i *= 2 {
 		r, err := regraDosTrapeziosRepetida(integral, i)
 		if err != nil {
 			return 0.0, err
@@ -288,6 +288,9 @@ func regraNewtonCotes4(integral models.Integral) (float64, error) {
 }
 
 func evaluateExpression(expr *govaluate.EvaluableExpression, params map[string]interface{}) (float64, error) {
+	params["e"] = math.E
+	params["pi"] = math.Pi
+	params["phi"] = math.Phi
 	t, err := expr.Evaluate(params)
 	if err != nil {
 		return 0.0, err
