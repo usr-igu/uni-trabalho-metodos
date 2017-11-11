@@ -54,22 +54,15 @@
             b: 0
         };
 
-        calculo = '';
-        var radios = document.getElementsByName('calculo');
-        for (var i = 0, length = radios.length; i < length; i++) {
-            if (radios[i].checked) {
-                calculo = radios[i].value;
-                break;
-            }
-        }
+        calculo = $('input:radio[name=calculo]:checked').val()
 
         console.log(calculo);
 
-        integral.expressao = document.getElementById('expressao').value;
-        integral.parametro = document.getElementById('parametro').value;
-        integral.a = document.getElementById('a').value;
-        integral.b = document.getElementById('b').value;
-        erro = document.getElementById('erro').value;
+        integral.expressao = $('#expressao').val();
+        integral.parametro = $('#parametro').val();
+        integral.a = $('#a').val();
+        integral.b = $('#b').val();
+        erro = $('#erro').val();
 
         axios.post('/' + calculo + '/' + erro, integral)
             .then(function (response) {
