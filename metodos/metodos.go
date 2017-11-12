@@ -380,14 +380,23 @@ func newExpression(expr string) (*govaluate.EvaluableExpression, error) {
 		},
 		"log2": func(args ...interface{}) (interface{}, error) {
 			c := math.Log2(args[0].(float64))
+			if c == math.NaN() {
+				return 0.0, nil
+			}
 			return (float64)(c), nil
 		},
 		"log10": func(args ...interface{}) (interface{}, error) {
 			c := math.Log10(args[0].(float64))
+			if c == math.NaN() {
+				return 0.0, nil
+			}
 			return (float64)(c), nil
 		},
 		"log": func(args ...interface{}) (interface{}, error) {
 			c := math.Log(args[0].(float64))
+			if c == math.NaN() {
+				return 0.0, nil
+			}
 			return (float64)(c), nil
 		},
 		"tan": func(args ...interface{}) (interface{}, error) {
