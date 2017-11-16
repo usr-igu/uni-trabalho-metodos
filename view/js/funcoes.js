@@ -1,0 +1,29 @@
+function enviaValores() {
+	
+			var integral = {
+				expressao: '',
+				parametro: '',
+				a: 0,
+				b: 0
+			};
+	
+			calculo = $('input:radio[name=calculo]:checked').val()
+	
+			console.log(calculo);
+	
+			integral.expressao = $('#expressao').val();
+			integral.parametro = $('#parametro').val();
+			integral.a = $('#a').val();
+			integral.b = $('#b').val();
+			erro = $('#erro').val();
+	
+			axios.post('/' + calculo + '/' + erro, integral)
+				.then(function (response) {
+					console.log(response.data.result);
+					$('#resultado').text("Resultado: " + response.data.result)
+					$('#resultado').removeAttr('hidden')
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+		}
