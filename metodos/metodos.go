@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"sync"
 	"time"
 
 	"github.com/Knetic/govaluate"
@@ -227,6 +228,12 @@ func regraDeSimpson38Repetida(ctx context.Context, integral models.Integral, n i
 	var result float64
 	params := make(map[string]interface{}, 1)
 
+	resultCh := make(chan float64, n)
+	errCh := make(chan error)
+	doneCh := make(chan bool)
+
+	var wg sync.WaitGroup
+
 	// a
 	params[integral.Parametro] = integral.A
 	r, err := evaluateExpression(expr, params)
@@ -243,55 +250,86 @@ func regraDeSimpson38Repetida(ctx context.Context, integral models.Integral, n i
 	}
 	result += r
 
-	// intervalo
-	for i := 1; i < n; i += 3 {
-		params[integral.Parametro] = integral.A + float64(i)*step
-		r, err := evaluateExpression(expr, params)
-		if err != nil {
-			return 0.0, err
-		}
-		result += r * 3.0
-		select {
-		case <-ctx.Done():
-			return 0.0, ctx.Err()
-		default:
-			continue
-		}
-	}
+	wg.Add(3)
 
 	// intervalo
-	for i := 2; i < n-1; i += 3 {
-		params[integral.Parametro] = integral.A + float64(i)*step
-		r, err := evaluateExpression(expr, params)
-		if err != nil {
-			return 0.0, err
+	go func() {
+		defer wg.Done()
+		params := copyParams(params)
+		for i := 1; i < n; i += 3 {
+			params[integral.Parametro] = integral.A + float64(i)*step
+			r, err := evaluateExpression(expr, params)
+			if err != nil {
+				errCh <- err
+			}
+			resultCh <- r * 3.0
+			select {
+			case <-ctx.Done():
+				errCh <- ctx.Err()
+			default:
+				continue
+			}
 		}
-		result += r * 3.0
-		select {
-		case <-ctx.Done():
-			return 0.0, ctx.Err()
-		default:
-			continue
-		}
-	}
+	}()
 
 	// intervalo
-	for i := 3; i < n-2; i += 3 {
-		params[integral.Parametro] = integral.A + float64(i)*step
-		r, err := evaluateExpression(expr, params)
-		if err != nil {
-			return 0.0, err
+	go func() {
+		defer wg.Done()
+		params := copyParams(params)
+		for i := 2; i < n-1; i += 3 {
+			params[integral.Parametro] = integral.A + float64(i)*step
+			r, err := evaluateExpression(expr, params)
+			if err != nil {
+				errCh <- err
+			}
+			resultCh <- r * 3.0
+			select {
+			case <-ctx.Done():
+				errCh <- ctx.Err()
+			default:
+				continue
+			}
 		}
-		result += r * 2.0
-		select {
-		case <-ctx.Done():
-			return 0.0, ctx.Err()
-		default:
-			continue
-		}
-	}
+	}()
 
-	return result * step * (3.0 / 8.0), nil
+	// intervalo
+	go func() {
+		defer wg.Done()
+		params := copyParams(params)
+		for i := 3; i < n-2; i += 3 {
+			params[integral.Parametro] = integral.A + float64(i)*step
+			r, err := evaluateExpression(expr, params)
+			if err != nil {
+				errCh <- err
+			}
+			resultCh <- r * 2.0
+			select {
+			case <-ctx.Done():
+				errCh <- ctx.Err()
+			default:
+				continue
+			}
+		}
+	}()
+
+	go func() {
+		wg.Wait()
+		close(resultCh)
+	}()
+
+	go func() {
+		for r := range resultCh {
+			result += r
+		}
+		doneCh <- true
+	}()
+
+	select {
+	case <-doneCh:
+		return result * step * (3.0 / 8.0), nil
+	case err := <-errCh:
+		return 0.0, err
+	}
 }
 
 func regraNewtonCotes4(integral models.Integral) (float64, error) {
@@ -409,4 +447,12 @@ func newExpression(expr string) (*govaluate.EvaluableExpression, error) {
 		return &govaluate.EvaluableExpression{}, err
 	}
 	return evaluable, nil
+}
+
+func copyParams(params map[string]interface{}) map[string]interface{} {
+	copiedParams := make(map[string]interface{}, len(params))
+	for k, v := range params {
+		copiedParams[k] = v
+	}
+	return copiedParams
 }
