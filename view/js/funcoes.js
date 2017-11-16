@@ -21,9 +21,15 @@ function enviaValores() {
         .then(function (response) {
             console.log(response.data.result);
             $('#resultado').text("Resultado: " + response.data.result)
+            $('#resultado').removeClass("alert-danger")
+            $('#resultado').addClass("alert-success")
             $('#resultado').removeAttr('hidden')
         })
         .catch(function (error) {
+            $('#resultado').text(error)
+            $('#resultado').removeClass("alert-success")
+            $('#resultado').addClass("alert-danger")
+            $('#resultado').removeAttr('hidden')
             console.log(error);
         });
 }

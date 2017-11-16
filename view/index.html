@@ -12,6 +12,8 @@
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <!-- Última versão CSS compilada e minificada -->
+    <link href="css/tether.min.css" rel="stylesheet">
+    <script type="text/javascript" src="js/tether.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -21,7 +23,7 @@
 <section class="container mt-3">
     <div class="card">
         <div class="card-title text-center">
-            <h1>Integrador para Métodos Computacionais</h1>
+            <h1 class="m-4">Integrador para Métodos Computacionais</h1>
         </div>
         <div class="card-block">
             <div class="row">
@@ -91,17 +93,13 @@
             </div>
             <div class="row">
                 <div class="col-md">
-                    <div>
-                        <input class="btn btn-success btn-block form-group" type="submit" value="Calcular!"
-                               prevent="default" onclick="enviaValores();">
-                    </div>
+                    <input class="btn btn-primary form-group" type="submit" value="Calcular!"
+                           prevent="default" onclick="enviaValores();">
                 </div>
             </div>
             <div class="row">
                 <div class="col-md">
-                    <div>
-                        <label class="form-control text-center" id="resultado" hidden></label>
-                    </div>
+                    <label class="form-control text-center alert" id="resultado" hidden></label>
                 </div>
             </div>
         </div>
