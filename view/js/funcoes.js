@@ -27,3 +27,16 @@ function enviaValores() {
 					console.log(error);
 				});
 		}
+
+
+
+$( window ).resize(function() {
+  	if ($(window).width()<= 550){
+	document.getElementById('menu').className = 'btn-group-vertical item centraliza d-flex justify-content-center';
+	}else if ($(window).width() > 550) {
+	document.getElementById('menu').className = 'btn-group item centraliza d-flex justify-content-center';
+	}
+});
+
+
+
