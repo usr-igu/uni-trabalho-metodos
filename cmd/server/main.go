@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"strconv"
 	"time"
-
 	"github.com/fuzzyqu/metodos"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"

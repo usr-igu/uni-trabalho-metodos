@@ -17,7 +17,7 @@ function enviaValores() {
     integral.b = $('#b').val();
     erro = $('#erro').val();
 
-    axios.post('/' + calculo + '/' + erro, integral)
+    axios.post('/' + calculo + '/' + erro, integral + '/' + encodeURI($('#derivada').val();))
         .then(function (response) {
             console.log(response.data.result);
             $('#resultado').text("Resultado: " + response.data.result)
